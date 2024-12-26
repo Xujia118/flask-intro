@@ -1,7 +1,7 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
-from books_controller import books_bp
-from employees_controller import employees_bp
+from controllers.books_controller import books_bp
+from controllers.employees_controller import employees_bp
 
 app = Flask(__name__)
 CORS(app)

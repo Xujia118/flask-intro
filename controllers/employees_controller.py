@@ -10,8 +10,13 @@ def get_employees():
     try:
         # Use the context manager with the imported engine
         with engine.connect() as connection:
-            query = text("SELECT * FROM employees;")
-            result = connection.execute(query)
+            query = text(
+                "SELECT CONCAT(firstName, ' ', lastName) AS `employees_in_usa`\
+                    FROM employees e \
+                    JOIN offices o ON e.officeCode = o.officeCode \
+                    WHERE o.country = :country;")
+            
+            result = connection.execute(query, { "country": 'USA'}) # We can can user input
 
             # Format the results into a list of dictionaries
             employees = [row._asdict() for row in result]
