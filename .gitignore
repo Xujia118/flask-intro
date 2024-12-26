@@ -1,0 +1,21 @@
+# Python-specific ignores
+*.pyc
+*.pyo
+*.pyd
+*.pkl
+*.egg
+*.egg-info/
+dist/
+build/
+__pycache__/
+
+# Virtual environments
+myenv/
+.env
+
+# IDE-specific files
+.vscode/
+.idea/
+
+# Mac-specific ignores
+.DS_Store
