@@ -1,0 +1,195 @@
+openapi: 3.0.0
+info:
+  title: My first swagger
+  description: Apis for books
+  version: 1.0.0
+servers:
+  - url: /api
+paths:
+  /health:
+    get:
+      summary: health check
+      operationId: handlers.check_health
+      responses:
+        "200":
+          description: Health Ok!
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: 
+                  message:
+                    type: string
+  /books:
+    get:
+      summary: Get all books
+      operationId: books.controller.get_all_books
+      responses:
+        "200":
+          description: A list of all books
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: object
+        "400":
+          description: Books not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+    post:
+      summary: Create a book
+      operationId: books.controller.add_book
+      responses:
+        "201":
+          description: Create a book
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+        "404":
+          description: Bad request (missing author or title)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: 
+                    type: string
+                  message:
+                    type: string
+  /books/{book_id}:
+    get:
+      summary: Get a specific book by id
+      operationId: books.controller.get_book
+      parameters:
+        - name: book_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Book details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: object
+        "404":
+          description: Book not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+    delete:
+      summary: Delete a book by ID
+      operationId: books.controller.delete_book
+      parameters:
+        - name: book_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Book deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+        "404":
+          description: Book not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+    patch:
+      summary: Update a book by ID
+      operationId: books.controller.update_book
+      parameters:
+        - name: book_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                author:
+                  type: string
+      responses:
+        "200":
+          description: Book updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+        "404":
+          description: Bad request (no data provided to update)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+        # "404":
+        #   description: Book not found
+        #   content:
+        #     application/json:
+        #       schema:
+        #         type: object
+        #         properties:
+        #           status:
+        #             type: string
+        #           message:
+        #             type: string
+

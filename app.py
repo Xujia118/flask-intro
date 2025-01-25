@@ -1,18 +1,12 @@
-from flask import Flask, jsonify
+import connexion
 from flask_cors import CORS
-from controllers.books_controller import books_bp
-from controllers.employees_controller import employees_bp
 
-app = Flask(__name__)
-CORS(app)
+app = connexion.App(__name__, specification_dir="./")
 
-# Register controllers
-app.register_blueprint(books_bp)
-app.register_blueprint(employees_bp)
+app.add_api("swagger.yml")
 
-@app.route("/health")
-def check_health():
-    return jsonify({"status": "success", "message": "Health OK!"})
+CORS(app.app)
+
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5001, debug=True)
+    app.run(port=5001)

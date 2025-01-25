@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request, abort
+from flask import app, jsonify, request, abort
 
 books = {
     1: {"title": "Book 1", "author": "Author 1"},
@@ -6,15 +6,11 @@ books = {
     3: {"title": "Book 3", "author": "Author 3"},
 }
 
-books_bp = Blueprint("books", __name__)
 
-
-@books_bp.route("/books")
-def get_books():
+def get_all_books():
     return jsonify({"status": "success", "data": books})
 
 
-@books_bp.route("/books/<int:book_id>")
 def get_book(book_id):
     book = books.get(book_id)
     if not book:
@@ -23,7 +19,6 @@ def get_book(book_id):
     return jsonify({"status": "success", "data": book})
 
 
-@books_bp.route("/books", methods=["POST"])
 def add_book():
     data = request.get_json()
 
@@ -37,10 +32,9 @@ def add_book():
     }
 
     books[new_book_id] = new_book
-    return jsonify({"status": "success", "message": "Book created!"}), 201
+    return jsonify({"status": "success", "message": "Book created!"})
 
 
-@books_bp.route("/books/<int:book_id>", methods=["DELETE"])
 def delete_book(book_id):
     book = books.pop(book_id, None)
     if not book:
@@ -49,7 +43,6 @@ def delete_book(book_id):
     return jsonify({"status": "success", "message": f"Book {book_id} deleted!"})
 
 
-@books_bp.route("/books/<int:book_id>", methods=['PATCH'])
 def update_book(book_id):
     book = books.get(book_id)
     if not book:
@@ -65,13 +58,3 @@ def update_book(book_id):
             book[key] = value
 
     return jsonify({"status": "success", "message": f"Book {book_id} modified!"}), 200
-
-
-@books_bp.errorhandler(404)
-def not_found(error):
-    return jsonify({"status": "error", "message": error.description}), 404
-
-
-@books_bp.errorhandler(400)
-def bad_request(error):
-    return jsonify({"status": "error", "message": error.description}), 400
