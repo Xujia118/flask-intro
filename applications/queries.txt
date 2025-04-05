@@ -1,0 +1,184 @@
+CREATE TABLE products (
+    id INT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL
+);
+
+-- Relationship table with 0/1 flag for internal/external
+CREATE TABLE product_relationships (
+    parent_product_id INT,
+    child_product_id INT,
+    is_external TINYINT NOT NULL DEFAULT 0,  -- 0 for internal, 1 for external
+    PRIMARY KEY (parent_product_id, child_product_id, is_external),
+    FOREIGN KEY (parent_product_id) REFERENCES products(id),
+    FOREIGN KEY (child_product_id) REFERENCES products(id),
+    CHECK (is_external IN (0, 1))
+);
+
+-- Insert all products (same as before)
+INSERT INTO products (id, name) VALUES
+-- Main applications
+(1, 'AMP'),
+(2, 'Agile Learning'),
+(3, 'PROPHET'),
+(4, 'ADAPTA'),
+(5, 'ROI Genome'),
+(6, 'Other'),
+
+-- AMP modules
+(101, 'Tracking'),
+(102, 'Business Insights'),
+(103, 'AMP Genome'),
+(104, 'Dataset Configurator'),
+(105, 'Forecasting Tool'),
+(106, 'ABI'),
+(107, 'Diagnostic Modeling'),
+(108, 'Constrained Regression'),
+(109, 'Bulk Upload'),
+(110, 'Company'),
+
+-- Agile Learning modules
+(201, 'Agile Dataset Management'),
+(202, 'Rollout'),
+(203, 'Iterate'),
+(204, 'Elasticities'),
+
+-- PROPHET modules (main)
+(301, 'Strategic Planner'),
+(302, 'Tactical Planner'),
+(303, 'Campaign Planner'),
+(304, 'Insights Dashboard'),
+(305, 'Insights Reports'),
+(306, 'Strategic Multi KPI'),
+
+-- PROPHET submodules
+(3011, 'Fighting - Full access'),
+(3012, 'Fighting - View only'),
+(3013, 'Strategic View Only'),
+(3021, 'Tactical Dataset Management'),
+(3031, 'Campaign Planner Dataset Management'),
+(3041, 'Insights Dashboard Configurator'),
+(3051, 'Portal Admin'),
+(3061, 'Strategic View Only'),
+
+-- ADAPTA modules
+(401, 'Data Scorecard'),
+(402, 'Adapta Max Scheduler'),
+(403, 'Adapta Max'),
+(404, 'ADAPTA Upload'),
+(405, 'ADAPTA Review'),
+(406, 'ADAPTA Review Dataset Configurator'),
+
+-- ROI Genome modules
+(501, 'Insights Max'),
+(502, 'Genome Taxonomy Trackers'),
+
+-- Other modules
+(601, 'GPS'),
+(602, 'Product / QA user'),
+(603, 'Ask Genome');
+
+-- Establish relationships (parent-child) with 0/1 flag
+-- Internal relationships (is_external = 0)
+INSERT INTO product_relationships (parent_product_id, child_product_id, is_external) VALUES
+-- AMP hierarchy
+(1, 101, 0),
+(1, 102, 0),
+(1, 103, 0),
+(1, 104, 0),
+(1, 105, 0),
+(1, 106, 0),
+(1, 107, 0),
+(1, 108, 0),
+(1, 109, 0),
+(1, 110, 0),
+
+-- Agile Learning hierarchy
+(2, 201, 0),
+(2, 202, 0),
+(2, 203, 0),
+(2, 204, 0),
+
+-- PROPHET hierarchy
+(3, 301, 0),
+(301, 3011, 0),  -- Strategic Planner → submodule
+(301, 3012, 0),
+(3, 302, 0),
+(302, 3021, 0),
+(3, 303, 0),
+(303, 3031, 0),
+(3, 304, 0),
+(304, 3041, 0),
+(3, 305, 0),
+(305, 3051, 0),
+
+-- ADAPTA hierarchy
+(4, 401, 0),
+(4, 402, 0),
+(4, 403, 0),
+(4, 404, 0),
+(4, 405, 0),
+(4, 406, 0),
+
+-- ROI Genome hierarchy
+(5, 501, 0),
+(5, 502, 0),
+
+-- Other hierarchy
+(6, 601, 0),
+(6, 602, 0);
+
+-- External relationships (is_external = 1)
+INSERT INTO product_relationships (parent_product_id, child_product_id, is_external) VALUES
+-- ADAPTA hierarchy (external)
+(4, 401, 1),
+(4, 404, 1),
+(4, 405, 1),
+
+-- AMP PILLAR contains Agile Learning (external)
+(1, 201, 1),
+
+-- PROPHET hierarchy (external)
+(3, 301, 1),  -- Strategic Planner
+(301, 3013, 1), -- Strategic Planner submodule
+(3, 306, 1),  -- Strategic Multi KPI
+(302, 3061, 1), -- Strategic Multi KPI submodule
+(3, 302, 1),  -- Tactical Planner (no submodules)
+(3, 303, 1),  -- Campaign Planner (no submodules)
+(3, 304, 1),  -- Insights Dashboard (no submodules)
+(3, 305, 1),  -- Insights Reports (no submodules)
+
+-- Other tools (external)
+(6, 603, 1);  -- Ask Genome
+
+
+
+-- Get one bucket
+SELECT
+    parent.name AS parent_name,
+    child.name AS child_name,
+    pr.is_external  -- Added table alias here
+FROM product_relationships pr
+JOIN products parent ON pr.parent_product_id = parent.id
+JOIN products child ON pr.child_product_id = child.id
+WHERE pr.parent_product_id = 1
+AND pr.is_external = 0;
+
+-- Get all buckets (applications list)
+-- Internal users 
+SELECT
+    parent.name AS parent_name,
+    child.name AS child_name
+FROM product_relationships pr
+JOIN products parent ON pr.parent_product_id = parent.id
+JOIN products child ON pr.child_product_id = child.id
+WHERE pr.is_external = 0;
+
+-- External users
+SELECT
+    parent.name AS parent_name,
+    child.name AS child_name,
+    pr.is_external  -- Added table alias here
+FROM product_relationships pr
+JOIN products parent ON pr.parent_product_id = parent.id
+JOIN products child ON pr.child_product_id = child.id
+WHERE pr.is_external = 1;

@@ -193,3 +193,58 @@ paths:
         #           message:
         #             type: string
 
+  /employees:
+    get:
+      summary: Get all employees
+      operationId: employees.controller.get_all_employees
+      responses:
+        "200":
+          description: A list of all employees
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: object
+        "400":
+          description: Employees not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string
+
+  /applications:
+    get:
+      summary: Get all applications
+      operationId: applications.controller.get_all_applications
+      responses:
+        "200":
+          description: A list of all applications
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: object
+        "400":
+          description: Applications not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  message:
+                    type: string

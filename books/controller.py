@@ -32,7 +32,7 @@ def add_book():
     }
 
     books[new_book_id] = new_book
-    return jsonify({"status": "success", "message": "Book created!"})
+    return jsonify({"status": "success", "message": "Book created!"}), 201
 
 
 def delete_book(book_id):
